@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  currency-exchange-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: currency-exchange-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=8080
+      - SCHEDULER_EXCHANGE_RATE_ENABLED=true
+      - SCHEDULER_EXCHANGE_RATE_CRON=0 0 * * * ?
+      - CRYPTO_AES_KEY=YourSecretKey123
+      - CRYPTO_AES_IV=YourInitVector1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
